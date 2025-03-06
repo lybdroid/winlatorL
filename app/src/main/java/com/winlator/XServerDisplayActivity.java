@@ -213,6 +213,7 @@ public class XServerDisplayActivity extends AppCompatActivity implements Navigat
                 }
 
                 if (window.id == frameRatingWindowId) frameRating.update();
+                com.winlator.renderer.GLRenderer.lastRenderTime = System.currentTimeMillis();
             }
 
             @Override

@@ -51,6 +51,7 @@ public class GLRenderer implements GLSurfaceView.Renderer, WindowManager.OnWindo
     private boolean magnifierEnabled = true;
     private int surfaceWidth;
     private int surfaceHeight;
+    public static long lastRenderTime;
 
     public GLRenderer(XServerView xServerView, XServer xServer) {
         this.xServerView = xServerView;
@@ -203,12 +204,27 @@ public class GLRenderer implements GLSurfaceView.Renderer, WindowManager.OnWindo
 
     @Override
     public void onUpdateWindowAttributes(Window window, Bitmask mask) {
-        if (mask.isSet(WindowAttributes.FLAG_CURSOR)) xServerView.requestRender();
+        if (mask.isSet(WindowAttributes.FLAG_CURSOR)) 
+        {
+            long currentTime = System.currentTimeMillis();
+            long elapsedTime = currentTime - lastRenderTime;
+
+            if (elapsedTime >= 100) {  // Ensure at least 100ms (10 FPS limit)
+                lastRenderTime = currentTime;  // Update last render time
+                xServerView.requestRender();   // Trigger rendering
+            }
+        }
     }
 
     @Override
     public void onPointerMove(short x, short y) {
-        xServerView.requestRender();
+        long currentTime = System.currentTimeMillis();
+        long elapsedTime = currentTime - lastRenderTime;
+
+        if (elapsedTime >= 100) {  // Ensure at least 100ms (10 FPS limit)
+            lastRenderTime = currentTime;  // Update last render time
+            xServerView.requestRender();   // Trigger rendering
+        }
     }
 
     private void renderDrawable(Drawable drawable, int x, int y, ShaderMaterial material) {
